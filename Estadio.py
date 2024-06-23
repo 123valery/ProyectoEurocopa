@@ -6,7 +6,7 @@ class Estadio:
         self.capacity = capacity
         self.restaurants = restaurants
     
-    def mostrar(self):
+    def show(self):
         print(f"Id: {self.id}\nName: {self.name}\nCapacity = {self.capacity}\nRestaunrants: {self.restaurants}")
         for restaurant in self.restaurants:
             print(f'     {restaurant.name}')

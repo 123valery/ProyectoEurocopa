@@ -4,5 +4,5 @@ class Restaurant:
         self.products = products
 
     
-    def mostrar(self):
+    def show(self):
         print(f"Name:{self.name}\nProducts: {self.products}\n")
