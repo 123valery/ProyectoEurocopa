@@ -12,18 +12,17 @@ class Partido:
         
     def show(self):
         '''muestra la informacion de un partido'''
-        print(f'''----  {self.home_team.name} vs {self.away_team.name}  ----
+        print(f'''----  {self.home_team['name']} vs {self.away_team['name']}  ----
                     date: {self.date}
-                    stadium: {self.stadium_id.name})
-                    date: {self.date}')
                     stadium: {self.stadium_id.name}
+                    date: {self.date}
                     id: {self.id}
                     number : {self.number}''')
     
 
     def show_stats(self):
         '''muestra datos relevantes de un partido'''
-        print(f'''----  {self.home_team.name} vs {self.away_team.name}  ----
+        print(f'''----  {self.home_team['name']} vs {self.away_team['name']}  ----
                     stadium: {self.stadium_id.name}
                     tickets vendidos: {self.tickets_sold}''')
       

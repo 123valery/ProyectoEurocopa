@@ -44,7 +44,7 @@ def manage_partidos(info_partidos):
     partidos = []
     for partido in info_partidos:
 
-        partido = Partido(partido['home'],partido['away'], partido['date'], partido['stadium_id'], partido['id'], 0,0)
+        partido = Partido(partido['home'],partido['away'], partido['date'], partido['stadium_id'], partido['id'], 0,0, partido['number'])
         partidos.append(partido)
     return partidos
 
@@ -107,8 +107,8 @@ def add_iva_products(estadios,restaurantes):
 
     for restaurant in restaurantes:
         for product in restaurant.products:
-            iva=product.price*0.16
-            product.total=iva+product.price
+            iva=float(product.price)*0.16
+            product.total=iva+float(product.price)
 
     return estadios,restaurantes
 
@@ -141,7 +141,7 @@ def register_client(clients):
             cedula = int(input('Ingrese su numero de cedula:  '))
             if len(str(cedula))>8:
                 print('/n la cedula ingresada tiene mas de 8 digitos')
-            if len (str(cedula)<7):
+            if len (str(cedula))<7:
                 print('/n la cedula ingresada tiene menos de 7 digitos')
                 raise Exception
             if len(clients) != 0:
@@ -163,9 +163,9 @@ def register_client(clients):
         
         except:
             print('\nEsta seguro que esta es su edad? Intente de nuevo\n')
-        tickets = []
-        new_client = Cliente(name, cedula, age, tickets)
-        clients.append(new_client)
+    tickets = []
+    new_client = Cliente(name, cedula, age, tickets)
+    clients.append(new_client)
 
         #Agregar lo de txt
     return clients, new_client
@@ -242,7 +242,7 @@ def ticket_selection(match_selected, tickets_vendidos):
     
     else:
         type = input('\nPuede escoger entre dos tipos de entrada:\n1-GENERAL\n  precio: 35$\n  inclue: vista del partido desde su asiento desde su asiento\n2-VIP\n  precio: 75\n  incluye:acceso al restaurante del estadio\n=> ')
-        while not type.isnumeric() or int(type) != 1 or int(type) != 2:
+        while not type.isnumeric() or (int(type) != 1 and int(type) != 2):
             type = input('\nIngreso invalido\nPuede escoger entre dos tipos de entrada:\n1-GENERAL\n  precio: 35$\n  inclue: vista del partido desde su asiento desde su asiento\n2-VIP\n  precio: 75\n  incluye:acceso al restaurante del estadio\n=> ')
     
     if int(type)== 1:
@@ -252,66 +252,130 @@ def ticket_selection(match_selected, tickets_vendidos):
 
     return ticket_selected
 
-def seat_selection(ticket_selected, partido, tickets_vendidos):
-    '''imprime el mapa del estadio y valida la eleccion del asiento'''
-    taken_seats = []
-    for ticket in tickets_vendidos:
-        if ticket.match == partido:
-            taken_seats.append(ticket.seat)
+# def seat_selection(ticket_selected, partido, tickets_vendidos):
+#     '''imprime el mapa del estadio y valida la eleccion del asiento'''
+#     taken_seats = []
+#     for ticket in tickets_vendidos:
+#         if ticket.match == partido:
+#             taken_seats.append(ticket.seat)
     
-    capacity_stadium = partido.stadium_id.capacity
-    general = capacity_stadium[0]
-    vip = capacity_stadium[1]
-    seat_amount = general + vip
-    column_count = 'A'
-    for a in range (int(seat_amount/10)):
-        fila = ['XX' if str(column_count)+ str(b+1)in taken_seats else str(column_count) +str(b+1) for b in range(-1,9)]
-        column_count = chr(ord(column_count)+1)
-        print(''.join(fila))
-    print('\n   CAMPO DE JUEGO    ')
-    print(' _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
-    print('|              |              |')
-    print('| _           _| _          _ |')
-    print('|  |         |    |        |  |')
-    print('| _|         | _ _|        |_ |')
-    print('|              |              |')
-    print('| _ _ _ _ _ _ _|_ _ _ _ _ _ _ |')
-    
-    while True:
-        try:
-            seat_selected = input('\nXX - Ocupado\nSeleccione el asiento de su preferencia segun el mapa:  ').upper()
-            if len(seat_selected) != 2:
-                print('\nrecuerde ingresar su asiento en formato "A0"  ')
-                raise Exception
-            if not seat_selected[0].isalpha():
-                raise Exception
-            for seat in taken_seats:
-                if seat_selected == seat:
-                    print('\nEste asiento ya fue vendido')
-                    raise Exception
-            in_range= False
-            for leter in range(ord(column_count)+1):
-                if leter == ord(seat_selected[0]):
-                    in_range = True
-                    break
-            if in_range == False:
-                print('\nLa fila seleccionada no existe en el estadio')
-                raise Exception
-            valid = False
-            for column in range(0,10):
-                if column == int(seat_selected[1]):
-                    valid = True
-                    break
-            if valid == False:
-                print('\nEl numero de asiento seleccionado no existe en el estadio')
-                raise Exception
-            break
-        except:
-            print('intente de nuevo!')
+#     capacity_stadium = partido.stadium_id.capacity
+#     general = capacity_stadium[0]
+#     vip = capacity_stadium[1]
+#     seat_amount = general + vip
+#     column_count = 'A'
+#     for a in range (int(seat_amount/10)):
+#         fila = ['XX' if str(column_count)+ str(b+1)in taken_seats else str(column_count) +str(b+1) for b in range(-1,9)]
+#         column_count = chr(ord(column_count)+1)
+#         print(''.join(fila))
+#     print('\n   CAMPO DE JUEGO    ')
+#     print(' _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
+#     print('|              |              |')
+#     print('| _           _| _          _ |')
+#     print('|  |         |    |        |  |')
+#     print('| _|         | _ _|        |_ |')
+#     print('|              |              |')
+#     print('| _ _ _ _ _ _ _|_ _ _ _ _ _ _ |')
 
-    ticket_selected.seat = seat_selected
-    ticket_selected.match = partido
-    return ticket_selected
+    
+#     while True:
+#         try:
+#             seat_selected = input('\nXX - Ocupado\nSeleccione el asiento de su preferencia segun el mapa:  ').upper()
+#             if len(seat_selected) != 2:
+#                 print('\nrecuerde ingresar su asiento en formato "A0"  ')
+#                 raise Exception
+#             if not seat_selected[0].isalpha():
+#                 raise Exception
+#             for seat in taken_seats:
+#                 if seat_selected == seat:
+#                     print('\nEste asiento ya fue vendido')
+#                     raise Exception
+#             in_range= False
+#             for leter in range(ord(column_count)+1):
+#                 if leter == ord(seat_selected[0]):
+#                     in_range = True
+#                     break
+#             if in_range == False:
+#                 print('\nLa fila seleccionada no existe en el estadio')
+#                 raise Exception
+#             valid = False
+#             for column in range(0,10):
+#                 if column == int(seat_selected[1]):
+#                     valid = True
+#                     break
+#             if valid == False:
+#                 print('\nEl numero de asiento seleccionado no existe en el estadio')
+#                 raise Exception
+#             break
+#         except:
+#             print('intente de nuevo!')
+
+#     ticket_selected.seat = seat_selected
+#     ticket_selected.match = partido
+#     return ticket_selected
+
+def crear_mapa(capacidad,columnas=10):
+    filas = int(capacidad/10)
+    mapa = []
+    for y in range(filas):
+        aux = []
+        for x in range(columnas):
+            aux.append(False)
+        mapa.append(aux)
+    return mapa 
+
+def imprimir_mapa(mapa):
+    print('*'*len(mapa[1]) + 'ASIENTOS DISPONIBLES'+'*'*len(mapa[1]))
+    print('\n')
+    nums = '    '
+    for i, x in enumerate(mapa[1]):
+        if i > 8 :
+            nums += str(i+1)+'|'
+        else:
+            nums +=  str(i+1)+'|  '
+    print(nums)
+    for i, x in enumerate(mapa):
+        if i>8:
+            auxiliar= str(i+1)
+        else:
+            auxiliar= str(i+1)+" "
+        for y in x:
+            if y ==True:
+                auxiliar+="| X "
+            else:
+                auxiliar+="|   "
+        print("   "+"-"*len(mapa[1]*4))
+        print(auxiliar)
+        
+def get_asientos(cantidad,mapa_aux):
+    # r = carrera
+    asientos = []
+    contador =1
+    imprimir_mapa(mapa_aux)
+    while cantidad >= contador:
+        while True:
+            try: 
+                asiento = {}
+                fila = input(f"Seleccione la fila de su entrada numero {contador}: ")
+                while not fila.isnumeric() or int(fila) not in range (1,11):
+                    fila = input(f"\nERROR - Ingreso Invalido\nSeleccione la fila de su entrada numero {contador}: ")
+                columna = input(f"Seleccione la columna de su entrada numero {contador}: ")
+                while not columna.isnumeric() or int(columna) not in range (1,11):
+                    columna = input(f"\nERROR - Ingreso Invalido\nSeleccione la columna de su entrada numero {contador}: ")
+                asiento.update({fila: columna})
+                if asiento in asientos:
+                    raise Exception
+                if mapa_aux[int(fila)-1][int(columna)-1]:
+                    raise Exception
+                break
+            except:
+                print(f"\nEl asiento {fila} {columna} ya esta ocupado. Por favor elija otro asiento.")
+        asientos.append(asiento)
+        mapa_aux[int(fila)-1][int(columna)-1]=True
+        contador += 1
+    print('Sus asientos seleccionados se representan con una "X"')
+    imprimir_mapa(mapa_aux)
+   
 
 
 def ticket_total(ticket_selected,client):
@@ -841,7 +905,7 @@ def top_3_clients(clients):
 def main():
     '''funcion principal del programa'''
     print('\n---BIENVENIDO A LA VENTA DE TICKETS DE LA EUROCOPA DE FUTBOLA EURO2024---\n')
-    load = input('Seleccione una opcion para la descarga de datos:\n1 - Cargar datos anteriores\2 - Reiniciciar programa \n=>')
+    load = input('Seleccione una opcion para la descarga de datos:\n1 - Cargar datos anteriores\n2 - Reiniciciar programa \n=>')
     while not load.isnumeric() or int(load) !=1 and int(load) !=2:
         load = input('\nSeleccion invalida!\nSeleccione una opcion para la descarga de datos:\n1 - Cargar datos anteriores\2 - Reiniciciar programa \n=>')
     
@@ -862,9 +926,9 @@ def main():
             partidos = list()
         
         try:
-            clientes = pickle.load(open('Clientes.txt','rb'))
+            clients = pickle.load(open('Clientes.txt','rb'))
         except:
-            clientes = list()
+            clients = list()
         
         try:
             tickets_vendidos = pickle.load(open('Tickets_vendidos.txt','rb'))
@@ -901,7 +965,7 @@ def main():
 
     while True:
         print('\n---BIENVENIDO A LA VENTA DE TICKETS DE LA EUROCOPA DE FUTBOL EURO 2024---\n')
-        option = get_option
+        option = get_option()
 
         if option ==1:
 
@@ -921,21 +985,47 @@ def main():
             
             print('\nPARTIDOS DISPONIBLES')
             for partido in partidos:
-                capacity_stadium = partido.stadium_id.capacity
-                seat_amount = int(capacity_stadium[0]) + int(capacity_stadium[1])
+                # capacity_stadium = partido.stadium_id.capacity
+                # seat_amount = int(capacity_stadium[0]) + int(capacity_stadium[1])
+                # capacity_general = partido.stadium_id.capacity[0]
+                # capacity_vip = partido.stadium_id.capacity[1]
+                
                 sold = []
                 for ticket in tickets_vendidos:
                     if ticket.match == partido:
                         sold.append(ticket)
-                if len(sold)<seat_amount:
-                    partido.show()
+                
+                
             match_selected = select_match(partidos)
-            ticket_selected = ticket_selection(match_selected, tickets_vendidos)
-            for partido in partidos:
-                if match_selected.id == partido.id:
-                    ticket_selected = seat_selection(match_selected, partido, tickets_vendidos)
-            ticket_selected = ticket_total(ticket_selected, client) 
-            client, codigos_tickets, tickets_vendidos, match_selected = buy_ticket(client, ticket_selected, codigos_tickets, tickets_vendidos, match_selected,)                         
+
+
+                #if len(sold)<(match_selected.stadium_id.capacity[0]):
+
+                    #partido.show()
+                #elif len(sold) < (match_selected.stadium_id.capacity[1]):
+                    #partido.show()
+
+                #else:
+                    #print('El partido esta lleno')
+
+            
+            capacity_general = match_selected.stadium_id.capacity[0]
+            capacity_vip = match_selected.stadium_id.capacity[1]
+            mapa_vip = crear_mapa(capacity_vip)
+            mapa_general = crear_mapa(capacity_general)
+            imprimir_mapa(mapa_vip)
+            imprimir_mapa(mapa_general)
+
+
+
+            # ticket_selected = ticket_selection(match_selected, tickets_vendidos)
+        
+            # for partido in partidos:
+            #     if match_selected.id == partido.id:
+                    # ticket_selected = seat_selectiocr(match_selected, partido, tickets_vendidos)
+                    
+            # ticket_selected = ticket_total(ticket_selected, client) 
+            # client, codigos_tickets, tickets_vendidos, match_selected = buy_ticket(client, ticket_selected, codigos_tickets, tickets_vendidos, match_selected,)                         
 
         elif option ==2:
             print('\n--- MODULO ADMINISTRATIVO DE USO DE ENTRADAS ---')
