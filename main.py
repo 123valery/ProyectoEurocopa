@@ -295,7 +295,7 @@ def seat_selection(ticket_selected, partido, tickets_vendidos):
                     in_range = True
                     break
             if in_range == False:
-                print('\La fila seleccionada no existe en el estadio')
+                print('\nLa fila seleccionada no existe en el estadio')
                 raise Exception
             valid = False
             for column in range(0,10):
@@ -726,10 +726,27 @@ def most_tickets_sold(partidos):
             if partido.tickets_sold>most_sold.tickets_sold:
                 most_sold = partido
     print(f'''\n\n--PARTIDO CON MAS TICKETS VENDIDOS--
+                ---{most_sold.home_team.name} vs {most_sold.away_team.name}----
+                    fecha: {most_sold.date}
+                    estadio: {most_sold.stadium_id.name}
+                    tickets: {most_sold.tickets_sold}''')
+    
+def most_tickets_used(partidos):
+    '''calcula y muestra el partido con la mayor asistencia'''
+    most_used = None
+    for partido in partidos:
+        if most_used == None:
+            most_used = partido
+        else:
+            if partido.used>most_used.used:
+                most_used = partido
+    print(f'''\n\n--PARTIDO CON MAYOR ASISTENCIA--
                 ---{most_used.home_team.name} vs {most_used.away_team.name}----
                     fecha: {most_used.date}
                     estadio: {most_used.stadium_id.name}
                     asistencia: {most_used.used}''')
+
+
 
 def top_3_restaurants(restaurants): #REVISAR
     '''calcula y muestra los 3 productos mas comprados en todos los restaurantes de la base de datos '''
@@ -831,42 +848,42 @@ def main():
     if int(load)==1:
         try:
             estadios = pickle.load(open('Estadios.txt','rb'))
-        except E0FError:
+        except:
             estadios = list()
         
         try:
             equipos = pickle.load(open('Equipos.txt','rb'))
-        except E0FError:
+        except:
             equipos = list()
         
         try:
             partidos = pickle.load(open('Partidos.txt','rb'))
-        except E0FError:
+        except:
             partidos = list()
         
         try:
             clientes = pickle.load(open('Clientes.txt','rb'))
-        except E0FError:
+        except:
             clientes = list()
         
         try:
             tickets_vendidos = pickle.load(open('Tickets_vendidos.txt','rb'))
-        except E0FError:
+        except:
             tickets_vendidos = list()
 
         try:
             restaurantes = pickle.load(open('Restaurantes.txt','rb'))
-        except E0FError:
+        except:
             restaurantes = list()
 
         try:
             codigos_tickets = pickle.load(open('Codigos_tickets.txt','rb'))
-        except E0FError:
+        except:
             codigos_tickets= list()
         
         try:
             codigos_usados = pickle.load(open('Codigos_usados.txt','rb'))
-        except E0FError:
+        except:
             codigos_usados= list()
     
     else:
@@ -980,11 +997,84 @@ def main():
                                         if choice == int(vip_ticket.match.id):
                                             found = True
                                             break
-                                        if found == False:
-                                            raise Exception
-                                        break
+                                    if found == False:
+                                        raise Exception
+                                    break
                                 except:
                                     print('\ningreso invalido, intente de nuevo!')
+                                
+                            for ticket_chosen in vip_tickets:
+                                if choice == int(ticket_chosen.match.id):
+                                    if len(ticket_chosen.match.stadium_id.restaurants) != 1:
+                                        print('\nRestaurantes en el recinto:')
+                                        aux =1
+                                        for restaurant in ticket_chosen.match.stadium_id.restaurants:
+                                            print('  ', aux, restaurant.name)
+                                            restaurant_chosen = restaurant
+                                            aux +=1
+                                        option_rest = input('\nIngrese el numero que corresponde al restaurante que desea  ver: ')
+                                        while not option_rest.isnumeric() or int(option_rest)!= 1 and int(option_rest)!=2:
+                                            option_rest = input('\nOpcion invalida\nIngrese el numero que corresponde al restaurante que desea ver: ')
+
+                                        if int(option_rest)==2:
+                                            restaurant_manager(restaurant_chosen, client, ticket_chosen)
+                                        else:
+                                            restaurant_chosen = ticket_chosen.match.stadium_id.restaurants[0]
+                                            restaurant_chosen, client = restaurant_manager(restaurant_chosen, client, ticket_chosen)
+                                            #ver si las variables en vd se updetean
+
+                                    else:
+                                        for restaurant in ticket_chosen.match.stadium_id.restaurants:
+                                            restaurant_chosen = restaurant
+                                            restaurant_manager(restaurant_chosen, client, ticket_chosen)
+                                else:
+                                    print(client.name,'todavia no has comprado una entrada VIP\nLo sentimos, no es posible continuar\n')
+                                    break
+                            break
+        elif option ==5:
+            print('\n---- BIENVENIDO AL BUSCADOR DE PRODUCTOS ----')
+            print('Selecciones una opcion para buscar productos en los restaurantes de los estadios de la Eurocopa 2024 ')
+            while True:
+                try:
+                    search = int(input('\n1 - Nombre\n2 - Tipo\n3 - Rango de precio\n =>'))
+                    if search !=1 and search !=2 and search != 3:
+                        raise Exception
+                    else:
+                        break
+                except:
+                    print('\nopcion invalida\n')
+            if search == 1:
+                search_by_name(restaurantes)
+            elif search ==2:
+                search_by_type(restaurantes)
+            else:
+                search_by_price_range(restaurantes)
+        elif option ==6:
+            print('\n ----- BIENVENIDO AL MODULO DE ESTADISTICAS ----- ')
+            if len (tickets_vendidos) == 0:
+                print('Todavia no se han realizAdo compras en el prpgrama!')
+            else:
+                print('A continuacion se presentan algunos datos de interes sobre la venta de tickets del programa ')
+                average_vip = get_average_vip(clients)
+                print(f'\nPromedio de gasto de un cliente VIP en un partido: ${average_vip}')
+                partidos, tickets_vendidos = get_ticket_used(partidos, tickets_vendidos)
+                match_assistance(partidos)
+                most_tickets_sold(partidos)
+                most_tickets_used(partidos)
+                top_3_restaurants(restaurantes)
+                top_3_clients(clients)
+        else:
+            pickle.dump(estadios, open('Estadios.txt', 'wb'))
+            pickle.dump(equipos, open('Equipos.txt', 'wb'))
+            pickle.dump(partidos, open('Partidos.txt', 'wb'))
+            pickle.dump(clients, open('Clientes.txt', 'wb'))
+            pickle.dump(tickets_vendidos, open('Tickets_vendidos.txt', 'wb'))
+            pickle.dump(restaurantes, open('Restaurantes.txt', 'wb'))
+            pickle.dump(codigos_tickets, open('Codigos_tickets.txt', 'wb'))
+            pickle.dump(codigos_usados, open('Codigos_usados.txt', 'wb'))
+            print('\nguardando...\nListo!')
+            break
+main()
 
 
 
