@@ -2,13 +2,13 @@ from Producto import Producto
 
 class Bebida(Producto):
 
-    tipo = 'bebida'
-    def __init__(self, name, price, quantity, adicional):
-        super().__init__(name, price, quantity)
+    
+    def __init__(self, name, price, stock, tipo, adicional):
+        super().__init__(name, price, stock, tipo)
 
         self.adicional = adicional
   
     
-    def show(self):
+    def mostrar(self):
         '''muestra la informacion del producto'''
-        print(f"Tipo : {self.tipo}\nName :{self.name}\nPrecio:{self.price}\nTipo de bebida :{self.adicional}")
+        print(f"Name :{self.name}\nPrecio:{self.price}\nAdicional :{self.adicional}\n Inventario :{self.adicional}\n")

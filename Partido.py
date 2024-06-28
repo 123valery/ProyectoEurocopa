@@ -1,28 +1,31 @@
 
 class Partido:
-    def __init__(self,home_team,away_team,date,stadium_id,id,tickets_sold,tickets_used,number):
-        self.home_team=home_team
-        self.away_team=away_team
+    def __init__(self,home,away,date,stadium_id,match_id,number, group):
+        self.home=home
+        self.away=away
         self.date=date
         self.stadium_id=stadium_id
-        self.id=id
-        self.tickets_sold=tickets_sold
-        self.used=tickets_used
+        self.match_id=match_id
+        self.tickets_vip=[]
+        self.tickets_gen=[]
+        self.used=[]
         self.number = number
+        self.group = group
         
-    def show(self):
+    def mostrar(self):
         '''muestra la informacion de un partido'''
-        print(f'''----  {self.home_team['name']} vs {self.away_team['name']}  ----
+        return(f'''----  {self.home.name} vs {self.away.name}  ----
+                    equipo local : {self.home.mostrar()}
+                    equipo visitante: {self.away.mostrar()}
                     date: {self.date}
-                    stadium: {self.stadium_id.name}
-                    date: {self.date}
-                    id: {self.id}
-                    number : {self.number}''')
+                    stadium: {self.stadium_id.mostrar()}
+                    
+                    
+                ''')
     
 
-    def show_stats(self):
+    def resumen(self):
         '''muestra datos relevantes de un partido'''
-        print(f'''----  {self.home_team['name']} vs {self.away_team['name']}  ----
-                    stadium: {self.stadium_id.name}
-                    tickets vendidos: {self.tickets_sold}''')
+        print(f'''----  {self.home.name} vs {self.away.name}  ----
+                ''')
       

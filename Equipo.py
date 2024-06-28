@@ -5,5 +5,5 @@ class Equipo:
         self.name = name
         self.group = group
     
-    def show(self):
-        print(f"Id: {self.id}\nCode: {self.code}\nName: {self.name}\nGroup: {self.group}")
+    def mostrar(self):
+        return(f"Id: {self.id}\nCode: {self.code}\nName: {self.name}\nGroup: {self.group}")

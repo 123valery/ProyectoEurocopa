@@ -3,6 +3,11 @@ class Restaurant:
         self.name = name
         self.products = products
 
+
+    def mostrar_productos(self):
+        for producto in self.products:
+            print(producto.mostrar())
     
-    def show(self):
-        print(f"Name:{self.name}\nProducts: {self.products}\n")
+    def mostrar(self):
+        print(f"\nName:{self.name}\nProducts: \n")
+        self.mostrar_productos()
