@@ -1,6 +1,6 @@
 class Estadio:
-    def __init__(self, id, name, city, capacity, restaurants):
-        self.id = id
+    def __init__(self, stadium_id, name, city, capacity, restaurants):
+        self.stadium_id = stadium_id
         self.name = name
         self.city = city
         self.capacity = capacity
@@ -8,7 +8,7 @@ class Estadio:
     
     def mostrar(self):
 
-        return(f"Id: {self.id}\nName: {self.name}\nCapacity = {self.capacity}\nCapacity :{self.capacity}\n")
+        return(f"Id: {self.stadium_id}\nName: {self.name}\nCapacity = {self.capacity}\nCapacity :{self.capacity}\n")
      
     
     def map (self, taken, i):
