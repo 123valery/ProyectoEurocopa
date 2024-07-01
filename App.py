@@ -49,7 +49,7 @@ class App():
     def comienzo(self):
         '''permite iniciar con la creacion de los objetos a partir de la api o del archivo txt creados '''
         print('\n---BIENVENIDO A LA VENTA DE TICKETS DE LA EUROCOPA DE FUTBOLA EURO2024---\n')
-        load = input('Seleccione una opcion para la descarga de datos:\n1 - Reiniciciar programa \n2 -  Cargar datos anteriores\n=>')
+        load = input('Seleccione una opcion para la descarga de datos:\n1 - Reiniciciar programa \n2 - Cargar datos anteriores\n=>')
         while not load.isnumeric() or int(load) <1 and int(load) >2:
             load = input('\nSeleccion invalida!\nSeleccione una opcion para la descarga de datos:\n1 - Reiniciciar programa \n2 -  Cargar datos anteriores\n=>')
         
@@ -90,8 +90,8 @@ class App():
         '''funcion menu que comienza el programa con la creaccion de los objetos a partir de la API o de los archovos txt'''
 
         while True:
-            print('\n---BIENVENIDO A LA VENTA DE TICKETS DE LA EUROCOPA DE FUTBOLA EURO2024---\n')
-            option=input('Para continuar seleccione una accion a realizar:\n1 - Buscar partidos\n2 - Registrar clientes\n3 - Comprar entradas\n4 - Confirmar Asistencia \n5 - Buscar productos en Restaurantes\n6 - Mostrar Estadisticas\n7 - Salir y Guardar\n=> ')
+            print('\n---BIENVENIDO A LA EUROCOPA DE FUTBOLA EURO2024---\n')
+            option=input('Para continuar seleccione una accion a realizar:\n1 - Buscar partidos\n2 - Registrar clientes\n3 - Comprar entradas\n4 - Confirmar Asistencia \n5 - Restaurantes\n6 - Mostrar Estadisticas\n7 - Salir y Guardar\n=> ')
 
             while not option.isnumeric() or int(option) <1 or int(option) >7:
                 option=input('Para continuar seleccione una accion a realizar:\n1 - Buscar partidos\n2 - Registrar clientes\n3 - Comprar entradas\n4 -Confirmar Asistencia e\n5 - Buscar productos en Restaurantes\n6 - Mostrar Estadisticas\n7 - Salir y Guardar\n=> ')
@@ -123,7 +123,7 @@ class App():
             
             #compra y busqueda en el restaurante
             elif int(option) ==5:
-                self.manage_resta()
+                self.manage_rest()
             
             elif int(option)==6:
                 self.estadisticas()
@@ -164,7 +164,7 @@ class App():
                         name = products["name"]
                         stock = int(products["stock"])
                         price = float(products["price"])
-                        adicional = (products["adicional"])
+                        adicional = products["adicional"]
                     
                     if adicional == 'alcoholic' or adicional== 'non-alcoholic':
                         new_product = Bebida(name, price, stock, 'bebida', adicional)
@@ -176,15 +176,15 @@ class App():
                 restaurante_actual = Restaurant(restaurant["name"], productos)
                 restaurantes.append(restaurante_actual)
 
-                estadio_actual = Estadio(estadio["id"],  estadio["name"], estadio["city"], estadio["capacity"], estadio["restaurants"])
+                estadio_actual = Estadio(estadio["id"],  estadio["name"], estadio["city"], estadio["capacity"], restaurantes)
             self.estadios.append(estadio_actual)
         
-        #PARTIDOS creacion objetos
+        #se crean los  objetos tipo partido
         for partido in partidos:
             for key, value in partido.items():
                 for equipo in self.equipos:
                     home = partido["home"]["name"]
-                    away = partido["home"]["name"]
+                    away = partido["away"]["name"]
 
                     if home == equipo.name:
                         home_actual = equipo
@@ -193,9 +193,9 @@ class App():
                 
                 for estadio in self.estadios:
                     if partido ["stadium_id"]==estadio.stadium_id:
-                        play_stadium = partido
+                        play_stadium = estadio
                 
-                partido_actual = Partido(partido["id"], partido["number"], home_actual, away_actual, partido["date"], partido["group"], play_stadium)
+                partido_actual = Partido(home_actual, away_actual,partido["date"],play_stadium, partido["number"], partido["group"])
             self.partidos.append(partido_actual)
 
 
@@ -285,12 +285,12 @@ class App():
         print('\nAntes de continuar con la compra, debe registrarse en la base de datos')
 
         name = input('Ingrese su nombre:  ').capitalize()
-        while not name.isalpha():
+        while name.isnumeric():
             name = input('\n Nombre invalido\nIngrese su nombre:  ').capitalize()
         
         
         cedula = input('Ingrese su numero de cedula:  ')
-        while not cedula.isnumeric() or len(cedula)>8 or len(cedula)<7:
+        while not cedula.isnumeric() or len(cedula)>9 or len(cedula)<1:
             cedula = input('Ingreso invalido. Ingrese su numero de cedula:  ')
 
         for client in self.clientes:
@@ -298,16 +298,10 @@ class App():
                 print('la cedula ya se encuentra en la base de datos\n')
                 self.menu()
 
-        while True:
-            try:
-                age = int(input('Ingrese su edad:  '))
-                if age<9 or age>100:
-                    raise Exception
-                else:
-                    break
-            
-            except:
-                print('\nEsta seguro que esta es su edad? Intente de nuevo\n')
+        age = input("Ingrese la edad:   ")
+        while not age.isnumeric() or int(age) > 100 or int(age)<1:
+            age = input("Ingreso invalido. Ingrese la edad:   ")
+
         
         cliente_actual = Cliente(name, cedula, age)
         self.clientes.append(cliente_actual)
@@ -318,20 +312,19 @@ class App():
     def find_client(self):
         '''busca al cliente en la base de datos del programa'''
         cedula_cliente = input('Ingrese su numero de cedula:  ')
-        while not cedula_cliente.isnumeric() or len(cedula_cliente)>8 or len(cedula_cliente)<7:
+        while not cedula_cliente.isnumeric() or len(cedula_cliente)>9 or len(cedula_cliente)<1:
             cedula_cliente = input('Ingreso invalido. Ingrese su numero de cedula: ')
         
         for client in self.clientes:
-                if cedula_cliente == client.cedula:
-                    self.buy_ticket(cedula_cliente)
-                    break
-                else:
-                    print('el usuario no se encuentra en la base de datos\n')
+            if cedula_cliente == client.cedula:
+                self.buy_ticket(cedula_cliente)
+                break
+            else:
+                print('el usuario no se encuentra en la base de datos\n')
     
-
+    #funcion para comprar tickets
     def buy_ticket(self, cedula_cliente):
 
-        cedula_cliente= input("Por favor ingrese la cedula del usuario: ")
         while not cedula_cliente.isnumeric() or len(cedula_cliente) > 9 or int(cedula_cliente) < 1:
             cedula_cliente = input("Ingreso invalido. Ingrese la cedula del usuario: ")
         
@@ -340,22 +333,22 @@ class App():
 
                 ticket_id = (len(self.tickets)+1)
 
-                for i, partido in enumerate(self.partidos):
+                for i, match in enumerate(self.partidos):
                     print(f"***{i+1}***\n")
-                    print(partido.mostrar())
+                    print(match.mostrar())
 
                 seleccion = input("Ingrese el numero correspodiente al partido que desea atender\n >> ")
                 while not seleccion.isnumeric() or int(seleccion) > len(self.partidos) or int(seleccion) < 1:
                     seleccion = input("Error. Ingrese el numero correspodiente al partido que desea atender\n >> ")
                 
-                partido = self.partidos[int(seleccion)-1]
+                match = self.partidos[int(seleccion)-1]
 
                 for client in self.clientes:
                     if cedula_cliente == client.cedula:
                         for ticket in client.tickets:
-                            if partido == ticket.match:
+                            if match == ticket.match:
                                 seleccion = input("Error. Usted ya compro una entrada para este partido: ")
-                                partido = self.partidos[int(seleccion)-1]
+                                match = self.partidos[int(seleccion)-1]
 
                 op_ticket = input("Ingrese 'G' para adquirir una entrada general o 'V' para adquirir una entrada VIP\n >> ").upper()
                 while not op_ticket == 'G' and not op_ticket == 'V':
@@ -368,16 +361,16 @@ class App():
                     if self.es_vampiro(cedula_cliente):
                         descuento = 35/2
 
-                    taken_seats = partido.seats_general
+                    taken_seats = match.seats_gen
 
                     i = 0
-                    partido.stadium.map(taken_seats, i)
+                    match.stadium.map(taken_seats, i)
 
                     chosen_seat = input("Ingrese el numero de asiento que desea\n >> ")
                     while not chosen_seat.isnumeric() or chosen_seat in taken_seats:
                         chosen_seat = input("Este asiento ya esta ocupado. Ingrese el numero de asiento que desea\n >>  ")
 
-                    ticket = General(ticket_id, partido, chosen_seat, descuento)
+                    ticket = General(ticket_id, match, chosen_seat, descuento)
                     print(ticket.mostrar())
 
                 elif op_ticket == "V":
@@ -386,15 +379,15 @@ class App():
                     if self.es_vampiro(cedula_cliente):
                         descuento = 75/2
 
-                    taken_seats = partido.seats_vip
+                    taken_seats = match.seats_vip
                     i = 1
-                    partido.stadium.map(taken_seats, i)
+                    match.stadium.map(taken_seats, i)
 
                     chosen_seat = input("Ingrese el numero de asiento que desea\n >> ")
                     while not chosen_seat.isnumeric() or chosen_seat in taken_seats:
                         chosen_seat = input("Este asiento ya esta ocupado. Ingrese el numero de asiento que desea\n >> ")
 
-                    ticket = VIP(ticket_id, partido, chosen_seat, descuento)
+                    ticket = VIP(ticket_id, match, chosen_seat, descuento)
                     print(ticket.mostrar())
 
                 #confirmacion de la compra 
@@ -407,17 +400,21 @@ class App():
 
                     if isinstance(ticket, General):
                         print(chosen_seat)
-                        partido.seats_general.append(chosen_seat)
+                        match.seats_gen.append(chosen_seat)
                     elif isinstance(ticket, VIP):
-                        partido.seats_vip.append(chosen_seat)
+                        match.seats_vip.append(chosen_seat)
                 
-                for client in self.clientes:
-                    if cedula_cliente == client.cedula:
-                        client.tickets.append(ticket)
-                        print(client.mostrar())
-                    
-                print("Su compra no fue finaliada!")
-                self.menu
+                    for client in self.clientes:
+                        if cedula_cliente == client.cedula:
+                            client.tickets.append(ticket)
+                            print(client.mostrar_atributos())
+                        
+                    print("Su compra ha sido procesada exitosamente!")
+        
+                else:
+                    print("Su compra no fue finaliada!")
+                    self.menu
+
 
 
 
@@ -435,7 +432,7 @@ class App():
                 x,y = joined[:int(len(joined)/2)], joined[int(len(joined)/2):]
                 if x[-1]==0 and y[-1]==0:
                     continue
-                if int(x)*int(y)==int(cedula):
+                if int(x)*int(y==int(cedula)):
                     return False
             
             return True
@@ -491,12 +488,12 @@ class App():
         if int(selec_rest) ==1:
             self.search_products()
         elif int(selec_rest)==2:
-            self.buy
+            self.buy_productos()
 
     
     def search_products(self):
         selec_product = input('Ingrese el producto que desea buscar: ').title()
-        while not selec_product.isnumeric():
+        while selec_product.isnumeric():
             selec_product = input('Error. Ingrese el producto que desea buscar: ').title()
     
         found = False
@@ -510,7 +507,7 @@ class App():
         {estadio.name}:
         {restaurant.name}
 
-        {producto.mostrar}
+        {producto.mostrar()}
         ''')
     
         if not found:
@@ -518,15 +515,15 @@ class App():
     
 
     def buy_productos(self):
-        ''''''
+        
         cedula_cliente = input("Ingrese su cedula: ")
 
         compra = False
         for client in self.clientes:
-            if int(client.dni) == int(cedula_cliente):
+            if int(client.cedula) == int(cedula_cliente):
                 current_client = client
                 for ticket in client.tickets:
-                    print(ticket.show_attr())
+                    print(ticket.mostrar())
                 ticket_id = input("Ingrese el ticket ID del partido en que se encuentra: ")
                 if isinstance(ticket, VIP):
                         compra = True
@@ -541,14 +538,14 @@ class App():
                     current_ticket = ticket
                     for restaurant in ticket.match.stadium.restaurants:
                         for i, products in enumerate(restaurant.products):
-                            print(f"{i+1}. {products.show_attr()}")
+                            print(f"{i+1}. {products.mostrar()}")
                             current_products = restaurant.products
 
             selec_compra = input("Numero del producto: ")
             while not selec_compra.isnumeric() or int(selec_compra) > len(current_products) or int(selec_compra) < 1:
                 op_compra = input("Error. Numero del producto: ")
             
-            compra = current_products[int(op_compra)-1]
+            compra = current_products[int(selec_compra)-1]
             for product in current_products:
                 if product == compra:
                     if product.tipo == "bebida":
@@ -557,10 +554,10 @@ class App():
                                     print("Usted no tiene la edad para comprar bebidas alcoholicas.")
                                     break
                     descuento = 0
-                    if self.es_perfecto(int(current_client.dni)):
+                    if self.es_perfecto(int(current_client.cedula)):
                         descuento = compra.price * 0.15
                     current_factura = Factura(compra, descuento)
-                    print(current_factura.show_attr())
+                    print(current_factura.mostrar())
 
                     confirmation = input(f"Desea comprar {product.name}?\n1. Si\n2. No\n")
                     while not confirmation.isnumeric() or int(confirmation) < 1 or int(confirmation) > 2:
@@ -582,7 +579,7 @@ class App():
         ''')
 
         selec_estadisticas = input("Ingrese una de las opciones:   ")
-        while not selec_estadisticas.isnumeric() or selec_estadisticas not in range (1,5):
+        while not selec_estadisticas.isnumeric() or int(selec_estadisticas) not in range (1,5):
             selec_estadisticas = input("Ingrese una de las opciones:   ")
         
         if int(selec_estadisticas) ==1:
@@ -591,7 +588,7 @@ class App():
             self.orden_asistencia()
         elif int(selec_estadisticas) ==3:
             self.ticket_vendidos()
-        else:
+        elif int(selec_estadisticas) ==4:
             self.mejor_cliente()
     
     def gastos_vip(self):
@@ -604,7 +601,7 @@ class App():
                     cant_tickets_vip += 1
                     tot_entradas_vip += ticket.total
                     for compra in ticket.compras:
-                        total_rest += compra.total
+                        tot_rest += compra.total
                     total_vip = tot_entradas_vip + tot_rest
 
         print(f'''
@@ -617,7 +614,7 @@ class App():
     def orden_asistencia(self):
         self.partidos.sort(key = lambda partido: len(partido.asistencia), reverse = True)
         for i, partido in enumerate(self.partidos):
-            entradas_vendidas = len(partido.seats_vip) + len(partido.seats_general)
+            entradas_vendidas = len(partido.seats_vip) + len(partido.seats_gen)
             asistencias = len(partido.asistencia)
             print(f'''
         {i+1}. ---{partido.home.name} VS {partido.away.name}---
@@ -632,7 +629,7 @@ class App():
         max_cant = 0
         for partido in self.partidos:
             vip = len(partido.seats_vip)
-            general = len(partido.seats_general)
+            general = len(partido.seats_gen)
             tot = vip + general
             if tot > max_cant:
                 partido_max = partido
@@ -644,7 +641,7 @@ class App():
 
         for i, cliente in enumerate (self.clientes):
             if i < 3:
-                print(f"{i+1}. {cliente.mostrar()}")
+                print(f"{i+1}. {cliente.mostrar_atributos()}")
 
 
         

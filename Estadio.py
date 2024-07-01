@@ -8,7 +8,7 @@ class Estadio:
     
     def mostrar(self):
 
-        return(f"Id: {self.stadium_id}\nName: {self.name}\nCapacity = {self.capacity}\nCapacity :{self.capacity}\n")
+        return(f"Id: {self.stadium_id}\nName: {self.name}\nCity = {self.city}\nCapacity :{self.capacity}\n")
      
     
     def map (self, taken, i):

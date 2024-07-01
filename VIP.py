@@ -5,8 +5,8 @@ class VIP(Ticket):
         super().__init__(ticket_id,match, seat)
         self.sub_total=75
         self.descuento = descuento
-        self.iva = (self.sub_total - self.descuento)
-        self.total = self.sub_total - self.descuento
+        self.iva = (self.sub_total - self.descuento) * 0.16
+        self.total = self.sub_total - self.descuento + self.iva
         self.compras  = []
     
     def mostrar(self):

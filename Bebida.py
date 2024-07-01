@@ -11,4 +11,4 @@ class Bebida(Producto):
     
     def mostrar(self):
         '''muestra la informacion del producto'''
-        return f"Name :{self.name}\nPrecio:{self.price}\nAdicional :{self.adicional}\n Inventario :{self.adicional}\n"
+        return f"\nName :{self.name}\nPrecio:{self.price}\nAdicional :{self.adicional}\nInventario :{self.stock}\n"

@@ -7,9 +7,9 @@ class Cliente:
     
     def mostrar_tickets(self):
         for ticket in self.tickets:
-            print(ticket.mostrar())
+            print(ticket.mostrar_atributos())
     
-    def mostrar_atrbiutos(self):
+    def mostrar_atributos(self):
         return f''''
         Nombre :{self.name}
         Cedula: {self.cedula}

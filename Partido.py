@@ -1,11 +1,10 @@
 
 class Partido:
-    def __init__(self,home,away,date,stadium_id,match_id,number, group):
+    def __init__(self,home,away,date,stadium,number, group):
         self.home=home
         self.away=away
         self.date=date
-        self.stadium_id=stadium_id
-        self.match_id=match_id
+        self.stadium=stadium
         self.seats_vip=[]
         self.seats_gen=[]
         self.asistencia=[]
