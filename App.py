@@ -419,25 +419,26 @@ class App():
 
 
     
-    def es_vampiro(self, cedula):
-        '''calcula si la cedula de un cliente es un numero vampiro y regresa el descuento correspondiente'''
-        try:
-            if len(cedula) ==7:
-                cedula = (f'0{cedula}')
-            
-            p = permutations(id, len(cedula))
-            p_list = list(p)
+    def es_vampiro(self, id):
+        vampiro = False
+        
+        if len(str(id)) %2 !=0:
+            return 0
+        else:
+            p=permutations(str(id),len(str(id)))
+            p_list=list(p)
             for n in p_list:
-                joined = ''.join(n)
-                x,y = joined[:int(len(joined)/2)], joined[int(len(joined)/2):]
+                joined=''.join(n)
+                x,y=joined[:int(len(joined)/2)],joined[int(len(joined)/2):]
                 if x[-1]==0 and y[-1]==0:
                     continue
-                if int(x)*int(y==int(cedula)):
-                    return False
-            
+                if int(x)*int(y)==int(id):
+                    vampiro=True
+        
+        if vampiro==False:
+            return 0
+        else:
             return True
-        except:
-            return False
     
     def es_perfecto(self, cedula):
         '''calcula si el subtotal de una compra es un numero perfecto '''
