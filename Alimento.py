@@ -10,4 +10,4 @@ class Alimento(Producto):
     
     def mostrar(self):
         '''muestra la informacion del producto'''
-        return f"Name :{self.name}\nPrecio:{self.price}\nAdicional :{self.adicional}\n Inventario :{self.adicional}\n"
+        return f"Name :{self.name}\nPrecio:{self.price}\nAdicional :{self.adicional}\n Inventario :{self.stock}\n"
